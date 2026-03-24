@@ -75,7 +75,7 @@ jobs:
           chmod +x ./extracted_files/pfcp 
 
       - name: Run Trivy scan (directory)
-        uses: aquasecurity/trivy-action@0.20.0
+        uses: aquasecurity/trivy-action@v0
         with:
           scan-type: fs
           scan-ref: ./extracted_files
