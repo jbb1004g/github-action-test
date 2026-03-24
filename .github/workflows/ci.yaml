@@ -26,10 +26,10 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - name: Checkout repository
+      - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Check package
+      - name: Check Package
         run: |
           test -f build/test.zip
           if [ $? -ne 0 ]; then
@@ -37,8 +37,40 @@ jobs:
             exit 1
           fi
         
-      - name: New version
+      - name: New Version
         env:
           VERSION: 3.0.${{ github.run_number }}
         run: |
           echo "New version: $VERSION"
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-package
+          path: build/test.zip
+
+  trivy-scan:
+    name: Trivy Vulnerability Scan
+    needs: upload
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      # [중요] 이전 Job에서 업로드한 파일을 다운로드함
+      - name: Download Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: build-package
+          path: build/
+
+      # [해결책] Trivy 공식 액션을 사용하여 zip 스캔
+      - name: Run Trivy Scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'           # 파일 시스템 모드 (압축 파일 내부도 탐지 시도)
+          scan-ref: 'build/test.zip'
+          format: 'table'           # 로그에 표로 출력
+          exit-code: '1'            # 취약점 발견 시 실패 처리
+          severity: 'CRITICAL,HIGH' # 심각한 것만 체크
