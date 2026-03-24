@@ -73,6 +73,8 @@ jobs:
           # 2. C 바이너리 파일(pfcp)에 실행 권한(+x)을 부여합니다. 
           # 리눅스 환경에서 실행 권한이 있어야 Trivy가 이를 '바이너리 실행 파일'로 정확히 인식합니다.
           chmod +x ./extracted_files/pfcp 
+          ldd ./extracted_files/pfcp
+          file ./extracted_files/pfcp
 
       - name: Run Trivy scan (directory)
         uses: aquasecurity/trivy-action@master
