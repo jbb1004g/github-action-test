@@ -31,9 +31,9 @@ jobs:
 
       - name: Check package
         run: |
-          test -f test.zip
+          test -f build/test.zip
           if [ $? -ne 0 ]; then
-            echo "Package test.zip not found"
+            echo "Package build/test.zip not found"
             exit 1
           fi
         
